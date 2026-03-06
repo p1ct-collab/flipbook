@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>相片 Flipbook</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      background: #f3f3f3;
+    }
+    #upload {
+      margin-bottom: 20px;
+      padding: 10px;
+    }
+    .book {
+      width: 90vw;
+      max-width: 600px;
+      height: 400px;
+      position: relative;
+      perspective: 1500px;
+      margin-top: 20px;
+    }
+    .page {
+      width: 50%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform-origin: left center;
+      transition: transform 0.6s ease;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      background-size: cover;
+      background-position: center;
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+    .page.flipped {
+      transform: rotateY(-180deg);
+    }
+    .btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>相片 Flipbook 翻頁書</h2>
+  <input type="file" id="upload" multiple accept="image/*">
+
+  <div class="book" id="book"></div>
+
+  <button class="btn" id="prev">上一頁</button>
+  <button class="btn" id="next">下一頁</button>
+
+  <script>
+    const upload = document.getElementById('upload');
+    const book = document.getElementById('book');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+
+    let pages = [];
+    let current = 0;
+
+    upload.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files);
+      pages = [];
+      book.innerHTML = '';
+
+      files.forEach((file, i) => {
+        const url = URL.createObjectURL(file);
+        const page = document.createElement('div');
+        page.classList.add('page');
+        page.style.backgroundImage = `url(${url})`;
+        book.appendChild(page);
+        pages.push(page);
+      });
+
+      if (pages.length > 0) {
+        pages[0].classList.add('active');
+        current = 0;
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (current >= pages.length - 1) return;
+      pages[current].classList.add('flipped');
+      current++;
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (current <= 0) return;
+      current--;
+      pages[current].classList.remove('flipped');
+    });
+  </script>
+</body>
+</html>
